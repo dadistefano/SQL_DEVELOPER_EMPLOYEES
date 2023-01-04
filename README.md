@@ -1,2 +1,5 @@
 # SQL_DEVELOPER_EMPLOYEES
 BD II
+
+//** SQL DEVELOPER DB EMPLOYEES **//
+Hierarchical / Pivot
