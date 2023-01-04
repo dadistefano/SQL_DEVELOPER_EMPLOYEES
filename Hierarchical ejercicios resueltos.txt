@@ -1,0 +1,65 @@
+/*Nuestro jefe nos solicita la siguiente informacion acerca del organigrama de la empresa*/
+
+/*
+1. Ver la jerarquia de organigrama desde De Haan, Lex hacia abajo.
+Ordenar a los empleados a su mando, desde el que posee el mayor a menor salario.
+
+El formato de la salida debe ser el siguiente:
+
+ID  Empleado            ID  MANAGER  NIVEL   SALARIO
+102	De Haan, Lex	    100	         1	     $17.000
+103	Hunold, Alexander	102	         2	     $9.000
+....
+
+*/
+
+SELECT employee_id id, last_name || ', ' || first_name empleado,  manager_id, LEVEL nivel, salary salario
+  FROM employees
+ START WITH employee_id = 102
+ CONNECT BY PRIOR employee_id = manager_id
+ ORDER SIBLINGS BY salary
+;
+
+/*
+2. 
+Para cada nivel de jerarquia, obtener la cantidad de empleados, el promedio y la suma de sus salarios
+
+NOTA: Es posible usar funciones de agrupamiento con consultas jerarquicas
+
+El formato de la salida debe ser el siguiente:
+
+Nivel_de_jerarquia   Cantidad_de_empleados    Promedio_salarial   Suma_de_salarios
+1                    1                        $24.000             $24.000
+....
+*/
+
+SELECT level nivel_de_jerarquia,       
+       count(*) cantidad_de_empleados, 
+       to_char(avg(salary), '$999,999') promedio_salarial,
+       to_char(sum(salary), '$999,999') suma_de_salarios
+  FROM employees
+ START WITH employee_id = 100
+ CONNECT BY PRIOR employee_id = manager_id 
+ GROUP BY level
+;
+
+/* 
+
+3. Mostrar la estructura del organigrama, indentando el nombre de cada empleado segun su nivel.
+Para cada nivel, se deben agregar 4 guiones hacia la izquierda.
+
+El formato de la salida debe ser el siguiente:
+
+NIVEL  ID   POSICION                        MANAGER_ID  SALARIO
+1	   100	----King, Steven		                    $24,000
+2	   101	--------Kochhar, Neena	        100	        $17,000
+3	   108	------------Greenberg, Nancy	101	        $12,008
+*/
+
+select LEVEL nivel, employee_id id, 
+       lpad('-', level * 4, '-') || last_name || ', ' || first_name Posicion,
+       manager_id,  to_char(salary, '$999,999') salario
+  from employees 
+  connect by prior employee_id = manager_id
+  start with employee_id = 100
+;

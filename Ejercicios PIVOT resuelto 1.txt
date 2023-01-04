@@ -1,0 +1,23 @@
+Usando la base de datos de clientes (customers - CO)
+
+Extraer la cantidad de ventas (orders) para cada tienda (STORE_ID), para cada mes.
+
+El formato de la salida debera ser el siguiente:
+
+STORE_ID	'JAN'	'FEB'	'MAR'	'APR'	.....
+  1	         121	  98	 111	 114	.....
+  2	          5	      0	       0	   0	.....
+
+*/
+select *
+  from (
+         select store_id, to_char(order_datetime, 'MON') Mes
+           from co.orders
+       )
+       pivot
+       (
+         count(*)
+         for Mes in ('JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC')
+       )
+  order by store_id
+;
